@@ -129,8 +129,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * The Radix Application API, a high level api which hides the complexity of atoms, cryptography, and
- * consensus. It exposes a simple high level interface for interaction with a Radix ledger.
+ * Exposes a high level interface for interacting with the Radix Ledger.
+ * It encapsulates the functionality of {@link Atom}s, cryptography and consensus.
  */
 public class RadixApplicationAPI {
 	/**
@@ -138,7 +138,7 @@ public class RadixApplicationAPI {
 	 *
 	 * @param bootstrap bootstrap configuration
 	 * @param identity the identity of user of API
-	 * @return an api instance
+	 * @return the api instance
 	 */
 	public static RadixApplicationAPI create(BootstrapConfig bootstrap, RadixIdentity identity) {
 		Objects.requireNonNull(identity);
@@ -150,7 +150,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Creates a default API builder with the default actions and reducers without an identity
+	 * Creates a default API builder with the default actions and reducers without an identity.
 	 *
 	 * @return an api builder instance
 	 */
@@ -243,7 +243,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Retrieve the user's public key
+	 * Retrieves the user's public key
 	 *
 	 * @return the user's public key
 	 */
@@ -252,7 +252,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Retrieve the user's key identity
+	 * Retrieves the user's key identity
 	 *
 	 * @return the user's identity
 	 */
@@ -261,7 +261,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Retrieve the user's address
+	 * Retrieves the user's address
 	 *
 	 * @return the current user's address
 	 */
@@ -270,7 +270,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Retrieve the address for the current universe given a public key
+	 * Retrieves the address for the current universe given a public key
 	 *
 	 * @param publicKey public key
 	 * @return an address based on the current universe and a given public key
@@ -280,21 +280,23 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Idempotent method which prefetches atoms in user's account
+	 * Prefetches atoms in user's account.
+	 * The atoms in the account are left unchanged.
 	 * TODO: what to do when no puller available
 	 *
-	 * @return Disposable to dispose to stop pulling
+	 * @return Disposable used to stop pulling
 	 */
 	public Disposable pull() {
 		return pull(getAddress());
 	}
 
 	/**
-	 * Idempotent method which prefetches atoms in an address
+	 * Prefetches atoms from the given address.
+	 * The atoms at the address are left unchanged.
 	 * TODO: what to do when no puller available
 	 *
 	 * @param address the address to pull atoms from
-	 * @return Disposable to dispose to stop pulling
+	 * @return Disposable used to stop pulling
 	 */
 	public Disposable pull(RadixAddress address) {
 		Objects.requireNonNull(address);
@@ -310,7 +312,7 @@ public class RadixApplicationAPI {
 	 * Retrieves atoms until the node returns a synced message.
 	 *
 	 * @param address the address to pull atoms for
-	 * @return a cold completable which on subscribe pulls atoms from a source
+	 * @return a cold completable which pulls atoms from a source when subscribed
 	 */
 	public Completable pullOnce(RadixAddress address) {
 		return Completable.create(emitter -> {
@@ -328,16 +330,18 @@ public class RadixApplicationAPI {
 	/**
 	 * Returns the native Token Reference found in the genesis atom
 	 *
-	 * @return the native token reference
+	 * @return the token reference
 	 */
 	public RRI getNativeTokenRef() {
 		return universe.getNativeToken();
 	}
 
 	/**
-	 * Returns a never ending stream of actions performed at a given address with the
-	 * given Atom Store. pull() must be called to continually retrieve the latest actions.
-	 *
+	 * Returns a never-ending stream of actions performed at a given address with the
+	 * given Atom Store.
+	 * <p/>
+	 * {@link RadixApplicationAPI#pull()} must be called to continually retrieve the latest actions.
+	 * <p/>
 	 * @param actionClass the Action class
 	 * @param address     the address to retrieve the state of
 	 * @param <T>         the Action class
@@ -353,9 +357,11 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Returns a never ending stream of a state of a given address with the
-	 * given Atom store. pull() must be called to continually retrieve the latest state.
-	 *
+	 * Returns a never-ending stream of a state of a given address with the
+	 * given Atom store.
+	 * <p/>
+	 * {@link RadixApplicationAPI#pull()} must be called to continually retrieve the latest state.
+	 * <p/>
 	 * @param stateClass the ApplicationState class
 	 * @param address    the address to retrieve the state of
 	 * @param <T>        the ApplicationState class
@@ -371,31 +377,30 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Returns a stream of the latest state of token definitions at a given
+	 * Returns a stream of the latest states of the token definitions at a given
 	 * address
 	 *
 	 * @param address the address of the account to check
-	 * @return a cold observable of the latest state of token definitions
+	 * @return a cold observable of the latest states of the token definitions: ({@link TokenDefinitionsState})
 	 */
 	public Observable<TokenDefinitionsState> observeTokenDefs(RadixAddress address) {
 		return observeState(TokenDefinitionsState.class, address);
 	}
 
 	/**
-	 * Returns a stream of the latest state of token definitions at the user's
-	 * address
+	 * Returns a stream of the latest state of token definitions at the user's address.
 	 *
-	 * @return a cold observable of the latest state of token definitions
+	 * @return a cold observable of the latest states of the token definitions
 	 */
 	public Observable<TokenDefinitionsState> observeTokenDefs() {
 		return observeTokenDefs(getAddress());
 	}
 
 	/**
-	 * Returns a stream of the latest state of a given token
+	 * Returns a stream of the latest state of a given token.
 	 *
 	 * @param tokenRRI The symbol of the token
-	 * @return a cold observable of the latest state of the token
+	 * @return a cold observable of the {@link TokenState} of the given token.
 	 */
 	public Observable<TokenState> observeTokenDef(RRI tokenRRI) {
 		return this.observeTokenDefs(tokenRRI.getAddress())
@@ -403,10 +408,10 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Retrieve the token state of the given rri
+	 * Retrieve the token state of the given Radix resource identifier (RRI).
 	 *
 	 * @param tokenRRI The symbol of the token
-	 * @return the token state of the rri
+	 * @return the token state of the {@link RRI}
 	 */
 	public TokenState getTokenDef(RRI tokenRRI) {
 		final ParticleReducer<TokenDefinitionsState> reducer = this.getStateReducer(TokenDefinitionsState.class);
@@ -418,7 +423,7 @@ public class RadixApplicationAPI {
 
 	/**
 	 * Returns a never ending stream of messages stored at the current address.
-	 * pull() must be called to continually retrieve the latest messages.
+	 * {@link RadixApplicationAPI#pull()} must be called to continually retrieve the latest messages.
 	 *
 	 * @return a cold observable of the messages at the current address
 	 */
@@ -428,10 +433,10 @@ public class RadixApplicationAPI {
 
 	/**
 	 * Returns a never ending stream of messages stored at a given address.
-	 * pull() must be called to continually retrieve the latest messages.
+	 * {@link RadixApplicationAPI#pull()} must be called to continually retrieve the latest messages.
 	 *
 	 * @param address the address to retrieve the messages from
-	 * @return a cold observable of the messages at the given address
+	 * @return a cold observable of the {@link DecryptedMessage}s at the given address
 	 */
 	public Observable<DecryptedMessage> observeMessages(RadixAddress address) {
 		Objects.requireNonNull(address);
@@ -439,7 +444,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Sends a message to one's self
+	 * Sends a message to this user.
 	 *
 	 * @param data    the message to send
 	 * @param encrypt if true, encrypts the message with a encrypted private key
@@ -464,9 +469,9 @@ public class RadixApplicationAPI {
 
 	/**
 	 * Returns a never ending stream of token transfers stored at the current address.
-	 * pull() must be called to continually retrieve the latest transfers.
+	 * {@link RadixApplicationAPI#pull()} must be called to continually retrieve the latest transfers.
 	 *
-	 * @return a cold observable of the token transfers at the current address
+	 * @return a cold observable of the {@link TokenTransfer}s at the current address
 	 */
 	public Observable<TokenTransfer> observeTokenTransfers() {
 		return observeTokenTransfers(getAddress());
@@ -474,7 +479,7 @@ public class RadixApplicationAPI {
 
 	/**
 	 * Returns a never ending stream of token transfers stored at a given address.
-	 * pull() must be called to continually retrieve the latest transfers.
+	 * {@link RadixApplicationAPI#pull()} must be called to continually retrieve the latest transfers.
 	 *
 	 * @param address The address to retrieve the token transfers from
 	 * @return a cold observable of the token transfers at the given address
@@ -485,7 +490,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Retrieve the balances of the current address from the current atom store.
+	 * Retrieves the balances of the current address from the current atom store.
 	 *
 	 * @return map of balances
 	 */
@@ -498,7 +503,7 @@ public class RadixApplicationAPI {
 
 	/**
 	 * Returns a stream of the latest balances at a given address.
-	 * pull() must be called to continually retrieve the latest balances.
+	 * {@link RadixApplicationAPI#pull()} must be called to continually retrieve the latest balances.
 	 *
 	 * @param address the address to observe balances of
 	 * @return a cold observable of the latest balances at an address
@@ -511,7 +516,7 @@ public class RadixApplicationAPI {
 
 	/**
 	 * Returns a stream of the latest balances at the current address
-	 * pull() must be called to continually retrieve the latest balances.
+	 * {@link RadixApplicationAPI#pull()} must be called to continually retrieve the latest balances.
 	 *
 	 * @param tokenRRI The symbol of the token
 	 * @return a cold observable of the latest balances at the current address
@@ -522,7 +527,7 @@ public class RadixApplicationAPI {
 
 	/**
 	 * Returns a stream of the latest balance of a given token at a given address
-	 * pull() must be called to continually retrieve the latest balance.
+	 * {@link RadixApplicationAPI#pull()} must be called to continually retrieve the latest balance.
 	 *
 	 * @param address The address to observe balances of
 	 * @param token The symbol of the token
@@ -537,9 +542,9 @@ public class RadixApplicationAPI {
 
 	/**
 	 * Returns a stream of the latest staked balances for the staker at the specified address.
-	 * pull() must have previously been called to ensure balances are retrieved and updated.
+	 * {@link RadixApplicationAPI#pull()} must have previously been called to ensure balances are retrieved and updated.
 	 *
-	 * @param address the staker's address
+	 * @param address the staker's {@link RadixAddress}
 	 * @return a cold observable of the latest staked amounts by validator and token RRI
 	 */
 	public Observable<Map<Pair<RadixAddress, RRI>, BigDecimal>> observeStakedBalances(RadixAddress address) {
@@ -550,7 +555,7 @@ public class RadixApplicationAPI {
 
 	/**
 	 * Returns a stream of the latest delegated stake balance for the validator at the specified address.
-	 * pull() must have previously been called to ensure balances are retrieved and updated.
+	 * {@link RadixApplicationAPI#pull()} must have previously been called to ensure balances are retrieved and updated.
 	 *
 	 * @param validator the address of the validator to observe stake balance of
 	 * @return a cold observable of the latest stake balances of the validator by token RRI
@@ -584,20 +589,20 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Creates a multi-issuance token registered into the user's account with
-	 * zero initial supply, 10^-18 granularity and no description.
+	 * Creates a multi-issuance token with an initial supply of zero and registered with the user's account.
+	 * The token has an 10^-18 granularity and no description.
 	 *
 	 * @param tokenRRI The symbol of the token to create
 	 * @param name     The name of the token to create
-	 * @return result of the transaction
+	 * @return {@link Result} of the transaction
 	 */
 	public Result createMultiIssuanceToken(RRI tokenRRI, String name) {
 		return createMultiIssuanceToken(tokenRRI, name, null);
 	}
 
 	/**
-	 * Creates a multi-issuance token registered into the user's account with
-	 * zero initial supply and 10^-18 granularity
+	 * Creates a multi-issuance token with an initial supply of zero and registered with the user's account.
+	 * The token has a descriptoion and an 10^-18 granularity.
 	 *
 	 * @param tokenRRI    The symbol of the token to create
 	 * @param name        The name of the token to create
@@ -613,8 +618,8 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Creates a multi-issuance token registered into the user's account with
-	 * zero initial supply and 10^-18 granularity
+	 * Creates a multi-issuance token with an initial suppluy of zero and registered with the user's account.
+	 * The token has an 10^-18 granularity.
 	 *
 	 * @param tokenRRI    The symbol of the token to create
 	 * @param name        The name of the token to create
@@ -663,8 +668,8 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Creates a fixed-supply token registered into the user's account with
-	 * 10^-18 granularity
+	 * Creates a fixed-supply token registered with the user's account.
+	 * The token has an 10^-18 granularity
 	 *
 	 * @param tokenRRI    The symbol of the token to create
 	 * @param name        The name of the token to create
@@ -696,7 +701,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Creates a token registered into the user's account
+	 * Creates a token registered with the user's account
 	 *
 	 * @param tokenRRI        The symbol of the token to create
 	 * @param name            The name of the token to create
@@ -718,7 +723,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Creates a token registered into the user's account
+	 * Creates a token registered with the user's account
 	 *
 	 * @param tokenRRI        The symbol of the token to create
 	 * @param name            The name of the token to create
@@ -754,7 +759,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Mints an amount of new tokens into the user's account
+	 * Mints an amount of new tokens and registers them with the user's account.
 	 *
 	 * @param token  The symbol of the token to mint
 	 * @param amount The amount to mint
@@ -870,7 +875,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Stakes a certain amount of a token from this address to a delegate.
+	 * Stakes a given amount of a token from this address to a delegate.
 	 *
 	 * @param amount     the amount of the token type
 	 * @param token      the token type
@@ -886,7 +891,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Stakes a certain amount of a token from an address to a delegate.
+	 * Stakes a given amount of a token from an address to a delegate.
 	 *
 	 * @param amount     the amount of the token type
 	 * @param token      the token type
@@ -1007,8 +1012,9 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Immediately executes a user action onto the ledger. Note that this method is NOT
-	 * idempotent.
+	 * Immediately executes a user action onto the ledger.
+	 *
+	 * This method will alter the conents of the ledger
 	 *
 	 * @param action     action to execute
 	 * @param originNode node to submit action to
@@ -1025,7 +1031,7 @@ public class RadixApplicationAPI {
 	 * particle groups to compose the atom.
 	 *
 	 * @param particleGroups particle groups to include in atom
-	 * @return unsigned atom with appropriate fees
+	 * @return unsigned {@link Atom} with appropriate fees
 	 */
 	public Atom buildAtomWithFee(List<ParticleGroup> particleGroups) {
 		Transaction t = createTransaction();
@@ -1037,7 +1043,7 @@ public class RadixApplicationAPI {
 	 * Create a new transaction which is based off of the
 	 * current data in the atom store.
 	 *
-	 * @return a new transaction
+	 * @return a new {@link Transaction}
 	 */
 	public Transaction createTransaction() {
 		return new Transaction();
@@ -1104,9 +1110,9 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Retrieve the atom store used by the API
+	 * Retrieves the atom store used by the API
 	 *
-	 * @return the atom store
+	 * @return the {@link AtomStore}
 	 */
 	public AtomStore getAtomStore() {
 		return this.universe.getAtomStore();
@@ -1121,9 +1127,9 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Get a stream of updated network states as they occur.
+	 * Gets a stream of updated network states as they occur.
 	 *
-	 * @return a hot observable of the current network state
+	 * @return a hot observable of the current {@link RadixNetworkState}
 	 */
 	public Observable<RadixNetworkState> getNetworkState() {
 		return this.universe.getNetworkController().getNetwork();
