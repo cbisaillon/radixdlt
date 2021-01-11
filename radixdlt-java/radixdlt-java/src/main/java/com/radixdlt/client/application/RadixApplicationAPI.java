@@ -339,9 +339,9 @@ public class RadixApplicationAPI {
 	/**
 	 * Returns a never-ending stream of actions performed at a given address with the
 	 * given Atom Store.
-	 * <p/>
+	 * <p>
 	 * {@link RadixApplicationAPI#pull()} must be called to continually retrieve the latest actions.
-	 * <p/>
+	 * <p>
 	 * @param actionClass the Action class
 	 * @param address     the address to retrieve the state of
 	 * @param <T>         the Action class
@@ -359,9 +359,9 @@ public class RadixApplicationAPI {
 	/**
 	 * Returns a never-ending stream of a state of a given address with the
 	 * given Atom store.
-	 * <p/>
+	 * <p>
 	 * {@link RadixApplicationAPI#pull()} must be called to continually retrieve the latest state.
-	 * <p/>
+	 * <p>
 	 * @param stateClass the ApplicationState class
 	 * @param address    the address to retrieve the state of
 	 * @param <T>        the ApplicationState class

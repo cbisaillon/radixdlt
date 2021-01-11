@@ -33,6 +33,9 @@ import java.util.Set;
 import com.radixdlt.serialization.DsonOutput;
 import com.radixdlt.serialization.SerializerId2;
 
+/**
+ * A message representing a particle pointing to a Radix ledger resource.
+ */
 @SerializerId2("radix.particles.rri")
 public final class RRIParticle extends Particle implements Accountable {
 	@JsonProperty("rri")

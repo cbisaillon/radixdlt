@@ -41,7 +41,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Particle which can hold arbitrary data
+ * The smallest addressable message unit used to send arbitrary data.
+ * It works by wrapping the the Radix Ledger's {@link Particle} with address information
+ * so it can be moved between {@link RadixAddress}es
  */
 @SerializerId2("radix.particles.message")
 public final class MessageParticle extends Particle implements Accountable {
