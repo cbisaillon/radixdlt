@@ -280,8 +280,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Prefetches atoms in user's account.
-	 * The atoms in the account are left unchanged.
+	 * Idempotent method which prefetches atoms in user's account
 	 * TODO: what to do when no puller available
 	 *
 	 * @return Disposable used to stop pulling
@@ -291,8 +290,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Prefetches atoms from the given address.
-	 * The atoms at the address are left unchanged.
+	 * Idempotent method which prefetches atoms in an address
 	 * TODO: what to do when no puller available
 	 *
 	 * @param address the address to pull atoms from
@@ -444,7 +442,7 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Sends a message to this user.
+	 * Sends a message to one's self
 	 *
 	 * @param data    the message to send
 	 * @param encrypt if true, encrypts the message with a encrypted private key
@@ -1012,9 +1010,8 @@ public class RadixApplicationAPI {
 	}
 
 	/**
-	 * Immediately executes a user action onto the ledger.
-	 *
-	 * This method will alter the conents of the ledger
+	 * Immediately executes a user action onto the ledger. Note that this method is NOT
+	 * idempotent.
 	 *
 	 * @param action     action to execute
 	 * @param originNode node to submit action to
